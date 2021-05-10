@@ -21,7 +21,7 @@ export const CreatePage = () => {
 
    const pressHandler = async (e) => {
       try {
-        const data = await request('/api/document/generate', 'POST', {
+        const data = await request('/api/document/generate/', 'POST', {
            title,
            subTitle,
            description
@@ -30,7 +30,7 @@ export const CreatePage = () => {
         })
          message('Статья создана')
 
-         // history.push(`/detail/${data.article.section._id}`) // перход на страницу с документацией
+         history.push(`/detail/${data.article.section._id}/`) // перход на страницу с документацией
       }
       catch (e) {
 

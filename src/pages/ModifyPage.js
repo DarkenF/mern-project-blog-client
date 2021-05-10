@@ -2,22 +2,25 @@ import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {useHistory} from "react-router-dom";
-import {DocumentsPage} from "./DocumentsPage";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {PostsNavList} from "../components/PostsNavList";
 import {useMessage} from "../hooks/message.hook";
 
 export const ModifyPage = () => {
+
    const history = useHistory()
    const auth = useContext(AuthContext)
-   const {request} = useHttp()
+   const {request, loading} = useHttp()
    const message = useMessage()
-   const [titleToChange, setTitleToChange] = useState('')
-   const [subTitleToChange, setSubTitleToChange] = useState('')
-   const [modifyTitle, setModifyTitle] = useState('')
-   const [modifySubTitle, setModifySubTitle] = useState('')
-   const [modifyDescription, setModifyDescription] = useState('')
+   const [state, setState] = useState({
+      titleToChange: '',
+      subTitleToChange: '',
+      modifyTitle: '',
+      modifySubTitle: '',
+      modifyDescription: '',
+   })
+   const [topics, setTopics] = useState(null)
 
    useEffect( () => {
       window.M.updateTextFields();
@@ -26,14 +29,11 @@ export const ModifyPage = () => {
 
    const fetchTopics = useCallback( async () => {
       try {
-         const fetched = await request('/api/document', 'GET', null, {
+         const fetched = await request('/api/document/', 'GET', null, {
             Authorization: `Bearer ${auth.token}`
          })
-
-      } catch (e) {
-
-      }
-
+         setTopics(fetched)
+      } catch (e) {}
    }, [auth.token, request])
 
    useEffect(() => {
@@ -42,19 +42,13 @@ export const ModifyPage = () => {
 
    const pressHandler = async (e) => {
       try {
-         const data = await request('/api/document/modify', 'POST', {
-            titleToChange,
-            subTitleToChange,
-            modifyTitle,
-            modifySubTitle,
-            modifyDescription,
-         }, {
+         const data = await request('/api/document/modify/', 'POST', {...state}, {
             Authorization: `Bearer ${auth.token}` // Проверка авторизации, делали через миддлвару
          })
 
          message('Данные изменены')
 
-         history.push(`/detail/${data.article.topic._id}`) // перход на страницу с документацией
+         history.push(`/detail/${data.article.topic._id}/`) // перход на страницу с документацией
       }
       catch (e) {
 
@@ -62,17 +56,22 @@ export const ModifyPage = () => {
    }
    const selectHandler = (e) => {
       const selectValue = e.target.value.split('&&')
-      setTitleToChange(selectValue[0]);
-      setSubTitleToChange(selectValue[1]);
-      setModifyTitle(selectValue[0]);
-      setModifySubTitle(selectValue[1]);
-      setModifyDescription(selectValue[2]);
+      setState(prevState => {
+         return {
+            ...prevState,
+            titleToChange: selectValue[0],
+            modifyTitle: selectValue[0],
+            subTitleToChange: selectValue[1],
+            modifySubTitle: selectValue[1],
+            modifyDescription: selectValue[2],
+         }
+      })
    }
 
    return (
       <div className="row" style={{}}>
          <div className="col s4" style={{paddingTop: '2rem'}}>
-            <PostsNavList selectHandler={selectHandler} />
+            <PostsNavList selectHandler={selectHandler} topics={topics} loading={loading}/>
          </div>
 
          <div className="col s8" style={{paddingTop: '2rem'}}>
@@ -80,7 +79,7 @@ export const ModifyPage = () => {
             <input
                id="title"
                type="text"
-               value={titleToChange}
+               value={state.titleToChange}
                disabled
                style={{color: "red"}}
             />
@@ -88,7 +87,7 @@ export const ModifyPage = () => {
             <input
                id="subTitle"
                type="text"
-               value={subTitleToChange}
+               value={state.subTitleToChange}
                style={{color: "red"}}
                disabled
             />
@@ -97,8 +96,8 @@ export const ModifyPage = () => {
                placeholder="Название раздела"
                id="description"
                type="text"
-               value={modifyTitle? modifyTitle : titleToChange}
-               onChange={e => setModifyTitle(e.target.value)}
+               value={state.modifyTitle? state.modifyTitle : state.titleToChange}
+               onChange={e => setState((prev) => {return {...prev, modifyTitle: e.target.value}})}
             />
             <label htmlFor="title">Введите новое название раздела (Если хотите	&nbsp;
                <span style={{color: 'red'}}>
@@ -112,8 +111,8 @@ export const ModifyPage = () => {
                placeholder="Название подраздела"
                id="newSubTitle"
                type="text"
-               value={modifySubTitle? modifySubTitle : subTitleToChange}
-               onChange={e => setModifySubTitle(e.target.value)}
+               value={state.modifySubTitle? state.modifySubTitle : state.subTitleToChange}
+               onChange={e => setState((prev) => {return {...prev, modifySubTitle: e.target.value}})}
             />
             <label htmlFor="title">Введите новое название подраздела (Если хотите &nbsp;
                <span style={{color: 'red'}}>
@@ -121,13 +120,16 @@ export const ModifyPage = () => {
                </span>&nbsp;
                подраздел, оставьте пустым)
             </label>
+            <div style={{color: 'red'}}>
+                  Для удления отдельной статьи из раздела, заполните поле "Название раздела", а поле "Название подраздела" оставьте пустым
+            </div>
             <h6>Введите новый контент подраздела</h6>
             <CKEditor
                editor={ ClassicEditor }
-               data={`${modifyDescription}`}
+               data={`${state.modifyDescription}`}
                onChange={ ( event, editor ) => {
                   const data = editor.getData();
-                  setModifyDescription(data)
+                  setState((prev) => {return {...prev, modifyDescription: data}})
                } }
             />
             <label htmlFor="description">Вставьте контент подраздела</label>

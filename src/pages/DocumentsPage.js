@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {Loader} from "../components/Loader";
@@ -11,7 +11,7 @@ export const DocumentsPage = () => {
 
    const fetchLinks = useCallback( async () => {
       try {
-         const fetched = await request('/api/document', 'GET', null, {
+         const fetched = await request('/api/document/', 'GET', null, {
             Authorization: `Bearer ${token}`
          })
 

@@ -3,7 +3,7 @@ import {useParams} from 'react-router-dom'
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {Loader} from "../components/Loader";
-import {LinkCard} from "../components/LinkCard";
+import {TopicCard} from "../components/TopicCard";
 
 export const DetailPage = () => {
    const {token} = useContext(AuthContext)
@@ -13,7 +13,7 @@ export const DetailPage = () => {
 
    const getLinks = useCallback(async () => {
       try {
-         const fetched = await request(`/api/document/${linkId}`, 'GET', null, {
+         const fetched = await request(`/api/document/${linkId}/`, 'GET', null, {
             Authorization: `Bearer ${token}`
          })
 
@@ -33,7 +33,7 @@ export const DetailPage = () => {
 
    return (
       <>
-         {!loading && links && <LinkCard links={links}/>}
+         {!loading && links && <TopicCard links={links}/>}
       </>
    )
 }

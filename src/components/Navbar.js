@@ -14,7 +14,7 @@ export const NavBar = ({isAdmin}) => {
    return (
       <nav>
          <div className="nav-wrapper blue darken-1" style={{ padding: '0 2rem'}}>
-            <span className="brand-logo l">MERN</span>
+            <NavLink to='/documents' className="brand-logo l">MERN</NavLink>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
                {isAdmin && (
                   <>
@@ -22,7 +22,7 @@ export const NavBar = ({isAdmin}) => {
                      <li><NavLink to="/modify">Изменить</NavLink></li>
                   </>
                )}
-               <li><NavLink to="/documents">Документация</NavLink></li>
+               <li><NavLink to="/document">Документация</NavLink></li>
                <li><a href="/" onClick={logoutHandler}>Выйти</a></li>
             </ul>
          </div>
