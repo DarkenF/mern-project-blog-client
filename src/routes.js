@@ -1,9 +1,10 @@
 import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
-import {LinksPage} from "./pages/LinksPage";
+import {DocumentsPage} from "./pages/DocumentsPage";
 import {CreatePage} from "./pages/CreatePage";
 import {DetailPage} from "./pages/DetailPage";
 import {AuthPage} from "./pages/AuthPage";
+import {ModifyPage} from "./pages/ModifyPage";
 
 // Кастомный хук, возвращающий роуты для авторизованного пользователя и не авторизованного пользователя
 export const useRoutes = (isAuth) => {
@@ -11,7 +12,10 @@ export const useRoutes = (isAuth) => {
       return (
          <Switch>
             <Route path="/documents" exact>
-               <LinksPage/>
+               <DocumentsPage/>
+            </Route>
+            <Route path="/modify" exact>
+               <ModifyPage/>
             </Route>
             <Route path="/create" exact>
                <CreatePage/>

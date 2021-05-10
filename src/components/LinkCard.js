@@ -5,7 +5,7 @@ export const LinkCard = ({links}) => {
    return (
          <>
             <h2>{links.subTitle}</h2>
-            <p>{links.description}</p>
+            <p dangerouslySetInnerHTML={{__html: links.description}}></p>
          </>
 
    )

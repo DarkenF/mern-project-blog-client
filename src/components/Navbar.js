@@ -16,7 +16,12 @@ export const NavBar = ({isAdmin}) => {
          <div className="nav-wrapper blue darken-1" style={{ padding: '0 2rem'}}>
             <span className="brand-logo l">MERN</span>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
-               {isAdmin && <li><NavLink to="/create">Создать</NavLink></li>}
+               {isAdmin && (
+                  <>
+                     <li><NavLink to="/create">Создать</NavLink></li>
+                     <li><NavLink to="/modify">Изменить</NavLink></li>
+                  </>
+               )}
                <li><NavLink to="/documents">Документация</NavLink></li>
                <li><a href="/" onClick={logoutHandler}>Выйти</a></li>
             </ul>

@@ -2,10 +2,14 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {useHistory} from "react-router-dom";
+import {CKEditor} from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {useMessage} from "../hooks/message.hook";
 
 export const CreatePage = () => {
    const history = useHistory()
    const auth = useContext(AuthContext)
+   const message = useMessage()
    const {request} = useHttp()
    const [title, setTitle] = useState('')
    const [subTitle, setSubTitle] = useState('')
@@ -24,8 +28,9 @@ export const CreatePage = () => {
         }, {
            Authorization: `Bearer ${auth.token}` // Проверка авторизации, делали через миддлвару
         })
+         message('Статья создана')
 
-         history.push(`/detail/${data.article.topic._id}`) // перход на страницу с документацией
+         // history.push(`/detail/${data.article.section._id}`) // перход на страницу с документацией
       }
       catch (e) {
 
@@ -35,28 +40,29 @@ export const CreatePage = () => {
    return (
       <div className="row" style={{display: "flex", flexDirection: "column"}}>
          <div className="col s8 offset-s2" style={{padding: '2rem'}}>
+            <h6>Введите название раздела</h6>
             <input
                placeholder="Введите название раздела"
                id="title"
                type="text"
                onChange={e => setTitle(e.target.value)}
             />
-            <label htmlFor="title">Введите название раздела</label>
+            <h6 >Введите название подраздела</h6>
             <input
                placeholder="Введите название подраздела"
                id="subTitle"
                type="text"
                onChange={e => setSubTitle(e.target.value)}
             />
-            <label htmlFor="subTitle">Введите название подраздела</label>
-            <input
-               placeholder="Вставьте контент подраздела"
-               id="description"
-               type="text"
-               onChange={e => setDescription(e.target.value)}
+            <h6>Создайте контент подраздела</h6>
+            <CKEditor
+               editor={ ClassicEditor }
+               data={`${description}`}
+               onChange={ ( event, editor ) => {
+                  const data = editor.getData();
+                  setDescription(data)
+               } }
             />
-            <label htmlFor="description">Вставьте контент подраздела</label>
-
          </div>
          <button onClick={pressHandler} style={{margin: '0 auto'}} className="btn yellow darken-4" >Создать</button>
 

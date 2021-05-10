@@ -10,6 +10,7 @@ import {Loader} from "./components/Loader";
 function App() {
    const {token, login, logout, userId, ready, isAdmin} = useAuth();
    const isAuth = !!token;
+   // TODO: Запретить роуты create и modify для обычных пользователей
    const routes = useRoutes(isAuth)
 
    if (!ready) {
